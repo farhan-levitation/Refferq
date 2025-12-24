@@ -1,8 +1,12 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { motion, AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import { FormData } from "@/components/campaign";
+const CampaignsTab = dynamic(() => import("./CampaignsTab"), { ssr: false });
 
 interface AffiliateStats {
   totalEarnings: number;
@@ -35,7 +39,13 @@ interface Payout {
 }
 
 // Dashboard Page Component
-function DashboardPage({ stats, referrals }: { stats: AffiliateStats | null; referrals: Referral[] }) {
+function DashboardPage({
+  stats,
+  referrals,
+}: {
+  stats: AffiliateStats | null;
+  referrals: Referral[];
+}) {
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
   };
@@ -48,7 +58,9 @@ function DashboardPage({ stats, referrals }: { stats: AffiliateStats | null; ref
       <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 group">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-gray-500 font-medium">Total Earnings</span>
+            <span className="text-sm text-gray-500 font-medium">
+              Total Earnings
+            </span>
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform">
               <span className="text-white">💰</span>
             </div>
@@ -61,23 +73,31 @@ function DashboardPage({ stats, referrals }: { stats: AffiliateStats | null; ref
 
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 group">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-gray-500 font-medium">Total Clicks</span>
+            <span className="text-sm text-gray-500 font-medium">
+              Total Clicks
+            </span>
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">
               <span className="text-white">👆</span>
             </div>
           </div>
-          <p className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">{stats?.totalClicks || 0}</p>
+          <p className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+            {stats?.totalClicks || 0}
+          </p>
           <p className="text-xs text-gray-400 mt-2">Link clicks</p>
         </div>
 
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 group">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-gray-500 font-medium">Total Leads</span>
+            <span className="text-sm text-gray-500 font-medium">
+              Total Leads
+            </span>
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:scale-110 transition-transform">
               <span className="text-white">📊</span>
             </div>
           </div>
-          <p className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">{stats?.totalLeads || 0}</p>
+          <p className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+            {stats?.totalLeads || 0}
+          </p>
           <p className="text-xs text-gray-400 mt-2">Submitted leads</p>
         </div>
 
@@ -88,37 +108,45 @@ function DashboardPage({ stats, referrals }: { stats: AffiliateStats | null; ref
               <span className="text-white">✅</span>
             </div>
           </div>
-          <p className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">{stats?.totalReferredCustomers || 0}</p>
+          <p className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+            {stats?.totalReferredCustomers || 0}
+          </p>
           <p className="text-xs text-gray-400 mt-2">Converted customers</p>
         </div>
       </div>
 
       {/* Links Section */}
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100 p-6">
-        <h3 className="text-lg font-bold text-gray-900 mb-5">Your Referral Links</h3>
-        
+        <h3 className="text-lg font-bold text-gray-900 mb-5">
+          Your Referral Links
+        </h3>
+
         {!stats?.referralCode ? (
           <div className="text-center py-10">
             <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <span className="text-3xl">🔗</span>
             </div>
-            <p className="text-gray-600 mb-2 font-medium">No referral code found</p>
+            <p className="text-gray-600 mb-2 font-medium">
+              No referral code found
+            </p>
             <p className="text-sm text-gray-400 mb-5">
               Generate your referral code to start earning commissions
             </p>
             <button
               onClick={async () => {
                 try {
-                  const response = await fetch('/api/affiliate/generate-code', { method: 'POST' });
+                  const response = await fetch("/api/affiliate/generate-code", {
+                    method: "POST",
+                  });
                   const data = await response.json();
                   if (data.success) {
                     window.location.reload();
                   } else {
-                    alert('Failed to generate code: ' + data.error);
+                    alert("Failed to generate code: " + data.error);
                   }
                 } catch (error) {
-                  console.error('Failed to generate code:', error);
-                  alert('Failed to generate code. Please try again.');
+                  console.error("Failed to generate code:", error);
+                  alert("Failed to generate code. Please try again.");
                 }
               }}
               className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl hover:shadow-lg hover:shadow-emerald-500/30 font-medium transition-all duration-300"
@@ -129,16 +157,18 @@ function DashboardPage({ stats, referrals }: { stats: AffiliateStats | null; ref
         ) : (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-2">Referral Link</label>
+              <label className="block text-sm font-medium text-gray-600 mb-2">
+                Referral Link
+              </label>
               <div className="flex gap-3">
                 <input
                   type="text"
                   readOnly
-                  value={stats?.referralLink || ''}
+                  value={stats?.referralLink || ""}
                   className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
                 />
                 <button
-                  onClick={() => copyToClipboard(stats?.referralLink || '')}
+                  onClick={() => copyToClipboard(stats?.referralLink || "")}
                   className="px-5 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl hover:shadow-lg hover:shadow-emerald-500/30 text-sm font-semibold transition-all duration-300"
                 >
                   Copy
@@ -146,16 +176,18 @@ function DashboardPage({ stats, referrals }: { stats: AffiliateStats | null; ref
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-2">Referral Code</label>
+              <label className="block text-sm font-medium text-gray-600 mb-2">
+                Referral Code
+              </label>
               <div className="flex gap-3">
                 <input
                   type="text"
                   readOnly
-                  value={stats?.referralCode || ''}
+                  value={stats?.referralCode || ""}
                   className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
                 />
                 <button
-                  onClick={() => copyToClipboard(stats?.referralCode || '')}
+                  onClick={() => copyToClipboard(stats?.referralCode || "")}
                   className="px-5 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl hover:shadow-lg hover:shadow-emerald-500/30 text-sm font-semibold transition-all duration-300"
                 >
                   Copy
@@ -168,7 +200,9 @@ function DashboardPage({ stats, referrals }: { stats: AffiliateStats | null; ref
 
       {/* Recent Referrals */}
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100 p-6">
-        <h3 className="text-lg font-bold text-gray-900 mb-5">Recent Referrals</h3>
+        <h3 className="text-lg font-bold text-gray-900 mb-5">
+          Recent Referrals
+        </h3>
         {referrals.length === 0 ? (
           <div className="text-center py-10 text-gray-400">
             <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -181,24 +215,45 @@ function DashboardPage({ stats, referrals }: { stats: AffiliateStats | null; ref
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50/50">
-                  <th className="text-left py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
-                  <th className="text-left py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Email</th>
-                  <th className="text-left py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="text-left py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
-                  <th className="text-right py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Value</th>
+                  <th className="text-left py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Name
+                  </th>
+                  <th className="text-left py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Email
+                  </th>
+                  <th className="text-left py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="text-left py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="text-right py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Value
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {referrals.slice(0, 5).map((ref) => (
-                  <tr key={ref.id} className="border-b border-gray-100 hover:bg-indigo-50/30 transition-colors">
-                    <td className="py-4 px-5 text-sm font-medium text-gray-900">{ref.leadName}</td>
-                    <td className="py-4 px-5 text-sm text-gray-500">{ref.leadEmail}</td>
+                  <tr
+                    key={ref.id}
+                    className="border-b border-gray-100 hover:bg-indigo-50/30 transition-colors"
+                  >
+                    <td className="py-4 px-5 text-sm font-medium text-gray-900">
+                      {ref.leadName}
+                    </td>
+                    <td className="py-4 px-5 text-sm text-gray-500">
+                      {ref.leadEmail}
+                    </td>
                     <td className="py-4 px-5">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        ref.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-700' :
-                        ref.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
-                        'bg-amber-100 text-amber-700'
-                      }`}>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          ref.status === "APPROVED"
+                            ? "bg-emerald-100 text-emerald-700"
+                            : ref.status === "REJECTED"
+                              ? "bg-red-100 text-red-700"
+                              : "bg-amber-100 text-amber-700"
+                        }`}
+                      >
                         {ref.status}
                       </span>
                     </td>
@@ -220,12 +275,19 @@ function DashboardPage({ stats, referrals }: { stats: AffiliateStats | null; ref
 }
 
 // Referrals Page Component
-function ReferralsPage({ referrals, onSubmitLead }: { referrals: Referral[]; onSubmitLead: () => void }) {
-  const [activeTab, setActiveTab] = useState<'all' | 'submitted'>('all');
+function ReferralsPage({
+  referrals,
+  onSubmitLead,
+}: {
+  referrals: Referral[];
+  onSubmitLead: () => void;
+}) {
+  const [activeTab, setActiveTab] = useState<"all" | "submitted">("all");
 
-  const filteredReferrals = activeTab === 'submitted' 
-    ? referrals.filter(r => r.status === 'PENDING')
-    : referrals;
+  const filteredReferrals =
+    activeTab === "submitted"
+      ? referrals.filter((r) => r.status === "PENDING")
+      : referrals;
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -244,24 +306,25 @@ function ReferralsPage({ referrals, onSubmitLead }: { referrals: Referral[]; onS
       <div className="border-b border-gray-200">
         <div className="flex gap-6">
           <button
-            onClick={() => setActiveTab('all')}
+            onClick={() => setActiveTab("all")}
             className={`pb-3 px-1 border-b-2 font-semibold text-sm transition-all ${
-              activeTab === 'all'
-                ? 'border-gray-900 text-gray-900'
-                : 'border-transparent text-gray-400 hover:text-gray-600'
+              activeTab === "all"
+                ? "border-gray-900 text-gray-900"
+                : "border-transparent text-gray-400 hover:text-gray-600"
             }`}
           >
             Referrals ({referrals.length})
           </button>
           <button
-            onClick={() => setActiveTab('submitted')}
+            onClick={() => setActiveTab("submitted")}
             className={`pb-3 px-1 border-b-2 font-semibold text-sm transition-all ${
-              activeTab === 'submitted'
-                ? 'border-gray-900 text-gray-900'
-                : 'border-transparent text-gray-400 hover:text-gray-600'
+              activeTab === "submitted"
+                ? "border-gray-900 text-gray-900"
+                : "border-transparent text-gray-400 hover:text-gray-600"
             }`}
           >
-            Submitted Leads ({referrals.filter(r => r.status === 'PENDING').length})
+            Submitted Leads (
+            {referrals.filter((r) => r.status === "PENDING").length})
           </button>
         </div>
       </div>
@@ -273,8 +336,12 @@ function ReferralsPage({ referrals, onSubmitLead }: { referrals: Referral[]; onS
             <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <span className="text-4xl">📋</span>
             </div>
-            <p className="text-gray-600 mb-2 font-medium text-lg">No referrals yet</p>
-            <p className="text-gray-400 mb-6">Start submitting leads to earn commissions</p>
+            <p className="text-gray-600 mb-2 font-medium text-lg">
+              No referrals yet
+            </p>
+            <p className="text-gray-400 mb-6">
+              Start submitting leads to earn commissions
+            </p>
             <button
               onClick={onSubmitLead}
               className="px-6 py-3 bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-xl hover:shadow-lg font-medium transition-all duration-300"
@@ -287,26 +354,51 @@ function ReferralsPage({ referrals, onSubmitLead }: { referrals: Referral[]; onS
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50/80">
-                  <th className="text-left py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Lead Name</th>
-                  <th className="text-left py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Email</th>
-                  <th className="text-left py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Company</th>
-                  <th className="text-left py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="text-left py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
-                  <th className="text-right py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Est. Value</th>
+                  <th className="text-left py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Lead Name
+                  </th>
+                  <th className="text-left py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Email
+                  </th>
+                  <th className="text-left py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Company
+                  </th>
+                  <th className="text-left py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="text-left py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="text-right py-4 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Est. Value
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {filteredReferrals.map((ref) => (
-                  <tr key={ref.id} className="border-b border-gray-100 hover:bg-indigo-50/30 transition-colors">
-                    <td className="py-4 px-5 text-sm font-medium text-gray-900">{ref.leadName}</td>
-                    <td className="py-4 px-5 text-sm text-gray-500">{ref.leadEmail}</td>
-                    <td className="py-4 px-5 text-sm text-gray-500">{ref.company || '-'}</td>
+                  <tr
+                    key={ref.id}
+                    className="border-b border-gray-100 hover:bg-indigo-50/30 transition-colors"
+                  >
+                    <td className="py-4 px-5 text-sm font-medium text-gray-900">
+                      {ref.leadName}
+                    </td>
+                    <td className="py-4 px-5 text-sm text-gray-500">
+                      {ref.leadEmail}
+                    </td>
+                    <td className="py-4 px-5 text-sm text-gray-500">
+                      {ref.company || "-"}
+                    </td>
                     <td className="py-4 px-5">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        ref.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-700' :
-                        ref.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
-                        'bg-amber-100 text-amber-700'
-                      }`}>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          ref.status === "APPROVED"
+                            ? "bg-emerald-100 text-emerald-700"
+                            : ref.status === "REJECTED"
+                              ? "bg-red-100 text-red-700"
+                              : "bg-amber-100 text-amber-700"
+                        }`}
+                      >
                         {ref.status}
                       </span>
                     </td>
@@ -328,13 +420,19 @@ function ReferralsPage({ referrals, onSubmitLead }: { referrals: Referral[]; onS
 }
 
 // Payouts Page Component
-function PayoutsPage({ stats, payouts }: { stats: AffiliateStats | null; payouts: Payout[] }) {
+function PayoutsPage({
+  stats,
+  payouts,
+}: {
+  stats: AffiliateStats | null;
+  payouts: Payout[];
+}) {
   const totalPaid = payouts
-    .filter(p => p.status === 'COMPLETED')
+    .filter((p) => p.status === "COMPLETED")
     .reduce((sum, p) => sum + p.amount, 0);
 
   const pendingAmount = payouts
-    .filter(p => p.status === 'PENDING')
+    .filter((p) => p.status === "PENDING")
     .reduce((sum, p) => sum + p.amount, 0);
 
   return (
@@ -373,7 +471,9 @@ function PayoutsPage({ stats, payouts }: { stats: AffiliateStats | null; payouts
 
       {/* Payout History */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Payout History</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Payout History
+        </h3>
         {payouts.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <p>No payouts yet</p>
@@ -383,25 +483,44 @@ function PayoutsPage({ stats, payouts }: { stats: AffiliateStats | null; payouts
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Date</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Method</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Status</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Amount</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">
+                    Date
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">
+                    Method
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">
+                    Status
+                  </th>
+                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">
+                    Amount
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {payouts.map((payout) => (
-                  <tr key={payout.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <tr
+                    key={payout.id}
+                    className="border-b border-gray-100 hover:bg-gray-50"
+                  >
                     <td className="py-3 px-4 text-sm text-gray-900">
-                      {new Date(payout.paidAt || payout.createdAt).toLocaleDateString()}
+                      {new Date(
+                        payout.paidAt || payout.createdAt
+                      ).toLocaleDateString()}
                     </td>
-                    <td className="py-3 px-4 text-sm text-gray-600">{payout.method}</td>
+                    <td className="py-3 px-4 text-sm text-gray-600">
+                      {payout.method}
+                    </td>
                     <td className="py-3 px-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        payout.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
-                        payout.status === 'FAILED' ? 'bg-red-100 text-red-800' :
-                        'bg-yellow-100 text-yellow-800'
-                      }`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          payout.status === "COMPLETED"
+                            ? "bg-green-100 text-green-800"
+                            : payout.status === "FAILED"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-yellow-100 text-yellow-800"
+                        }`}
+                      >
                         {payout.status}
                       </span>
                     </td>
@@ -420,12 +539,12 @@ function PayoutsPage({ stats, payouts }: { stats: AffiliateStats | null; payouts
 }
 
 // Settings Page Component
-function SettingsPage({ 
-  settingsForm, 
-  setSettingsForm, 
-  onUpdate 
-}: { 
-  settingsForm: any; 
+function SettingsPage({
+  settingsForm,
+  setSettingsForm,
+  onUpdate,
+}: {
+  settingsForm: any;
   setSettingsForm: (form: any) => void;
   onUpdate: (field: string) => void;
 }) {
@@ -436,9 +555,11 @@ function SettingsPage({
       {/* Personal Details */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">Personal Details</h3>
+          <h3 className="text-lg font-semibold text-gray-900">
+            Personal Details
+          </h3>
           <button
-            onClick={() => onUpdate('Personal Details')}
+            onClick={() => onUpdate("Personal Details")}
             className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 text-sm font-medium"
           >
             Update
@@ -447,43 +568,59 @@ function SettingsPage({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Full Name
+            </label>
             <input
               type="text"
               value={settingsForm.name}
-              onChange={(e) => setSettingsForm({ ...settingsForm, name: e.target.value })}
+              onChange={(e) =>
+                setSettingsForm({ ...settingsForm, name: e.target.value })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="John Doe"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Company</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Company
+            </label>
             <input
               type="text"
               value={settingsForm.company}
-              onChange={(e) => setSettingsForm({ ...settingsForm, company: e.target.value })}
+              onChange={(e) =>
+                setSettingsForm({ ...settingsForm, company: e.target.value })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Company Name"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Email
+            </label>
             <input
               type="email"
               value={settingsForm.email}
-              onChange={(e) => setSettingsForm({ ...settingsForm, email: e.target.value })}
+              onChange={(e) =>
+                setSettingsForm({ ...settingsForm, email: e.target.value })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="john@example.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Country
+            </label>
             <select
               value={settingsForm.country}
-              onChange={(e) => setSettingsForm({ ...settingsForm, country: e.target.value })}
+              onChange={(e) =>
+                setSettingsForm({ ...settingsForm, country: e.target.value })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="India">India</option>
@@ -499,9 +636,11 @@ function SettingsPage({
       {/* Payment Details */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">Payment Details</h3>
+          <h3 className="text-lg font-semibold text-gray-900">
+            Payment Details
+          </h3>
           <button
-            onClick={() => onUpdate('Payment Details')}
+            onClick={() => onUpdate("Payment Details")}
             className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 text-sm font-medium"
           >
             Update
@@ -510,10 +649,17 @@ function SettingsPage({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Payment Method
+            </label>
             <select
               value={settingsForm.paymentMethod}
-              onChange={(e) => setSettingsForm({ ...settingsForm, paymentMethod: e.target.value })}
+              onChange={(e) =>
+                setSettingsForm({
+                  ...settingsForm,
+                  paymentMethod: e.target.value,
+                })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="PayPal">PayPal</option>
@@ -524,11 +670,18 @@ function SettingsPage({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Payment Email / Account</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Payment Email / Account
+            </label>
             <input
               type="text"
               value={settingsForm.paymentEmail}
-              onChange={(e) => setSettingsForm({ ...settingsForm, paymentEmail: e.target.value })}
+              onChange={(e) =>
+                setSettingsForm({
+                  ...settingsForm,
+                  paymentEmail: e.target.value,
+                })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="payment@example.com"
             />
@@ -537,8 +690,9 @@ function SettingsPage({
 
         <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
           <p className="text-sm text-blue-800">
-            <strong>Note:</strong> Payouts are processed on the 1st of each month for the previous month's earnings. 
-            Minimum payout threshold is ₹1,000.
+            <strong>Note:</strong> Payouts are processed on the 1st of each
+            month for the previous month's earnings. Minimum payout threshold is
+            ₹1,000.
           </p>
         </div>
       </div>
@@ -548,29 +702,32 @@ function SettingsPage({
 
 export default function AffiliateDashboard() {
   const { user, loading: authLoading, logout } = useAuth();
-  const [activePage, setActivePage] = useState('dashboard');
+  const [activePage, setActivePage] = useState("dashboard");
   const [stats, setStats] = useState<AffiliateStats | null>(null);
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [payouts, setPayouts] = useState<Payout[]>([]);
   const [loading, setLoading] = useState(true);
-  const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [notification, setNotification] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   // Referral form state
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [submitForm, setSubmitForm] = useState({
-    leadName: '',
-    leadEmail: '',
-    estimatedValue: '0',
+    leadName: "",
+    leadEmail: "",
+    estimatedValue: "0",
   });
 
   // Settings form state
   const [settingsForm, setSettingsForm] = useState({
-    name: '',
-    company: '',
-    email: '',
-    country: '',
-    paymentMethod: 'PayPal',
-    paymentEmail: '',
+    name: "",
+    company: "",
+    email: "",
+    country: "",
+    paymentMethod: "PayPal",
+    paymentEmail: "",
   });
 
   useEffect(() => {
@@ -582,39 +739,41 @@ export default function AffiliateDashboard() {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/affiliate/profile');
+      const response = await fetch("/api/affiliate/profile");
       const data = await response.json();
-      
+
       if (data.success) {
         setStats({
           totalEarnings: data.affiliate?.balanceCents || 0,
           totalClicks: 0,
           totalLeads: data.referrals?.length || 0,
-          totalReferredCustomers: data.referrals?.filter((r: any) => r.status === 'APPROVED').length || 0,
+          totalReferredCustomers:
+            data.referrals?.filter((r: any) => r.status === "APPROVED")
+              .length || 0,
           referralLink: `${window.location.origin}/r/${data.affiliate?.referralCode}`,
-          referralCode: data.affiliate?.referralCode || '',
+          referralCode: data.affiliate?.referralCode || "",
         });
         setReferrals(data.referrals || []);
-        
+
         // Load user settings
         setSettingsForm({
-          name: user?.name || '',
-          company: '',
-          email: user?.email || '',
-          country: 'India',
-          paymentMethod: 'PayPal',
-          paymentEmail: user?.email || '',
+          name: user?.name || "",
+          company: "",
+          email: user?.email || "",
+          country: "India",
+          paymentMethod: "PayPal",
+          paymentEmail: user?.email || "",
         });
       }
-      
+
       // Load payouts
-      const payoutsRes = await fetch('/api/affiliate/payouts');
+      const payoutsRes = await fetch("/api/affiliate/payouts");
       if (payoutsRes.ok) {
         const payoutsData = await payoutsRes.json();
         setPayouts(payoutsData.payouts || []);
       }
     } catch (error) {
-      console.error('Failed to load dashboard data:', error);
+      console.error("Failed to load dashboard data:", error);
     } finally {
       setLoading(false);
     }
@@ -622,11 +781,11 @@ export default function AffiliateDashboard() {
 
   const handleSubmitLead = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
-      const response = await fetch('/api/affiliate/referrals', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/affiliate/referrals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           lead_name: submitForm.leadName,
           lead_email: submitForm.leadEmail,
@@ -635,17 +794,26 @@ export default function AffiliateDashboard() {
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
-        setNotification({ type: 'success', message: 'Lead submitted successfully! Waiting for admin approval.' });
+        setNotification({
+          type: "success",
+          message: "Lead submitted successfully! Waiting for admin approval.",
+        });
         setShowSubmitModal(false);
-        setSubmitForm({ leadName: '', leadEmail: '', estimatedValue: '0' });
+        setSubmitForm({ leadName: "", leadEmail: "", estimatedValue: "0" });
         loadDashboardData();
       } else {
-        setNotification({ type: 'error', message: data.error || 'Failed to submit lead' });
+        setNotification({
+          type: "error",
+          message: data.error || "Failed to submit lead",
+        });
       }
     } catch (error) {
-      setNotification({ type: 'error', message: 'An error occurred while submitting lead' });
+      setNotification({
+        type: "error",
+        message: "An error occurred while submitting lead",
+      });
     }
 
     setTimeout(() => setNotification(null), 5000);
@@ -653,19 +821,25 @@ export default function AffiliateDashboard() {
 
   const handleUpdateSettings = async (field: string) => {
     try {
-      const response = await fetch('/api/affiliate/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/affiliate/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(settingsForm),
       });
 
       if (response.ok) {
-        setNotification({ type: 'success', message: `${field} updated successfully!` });
+        setNotification({
+          type: "success",
+          message: `${field} updated successfully!`,
+        });
       } else {
-        setNotification({ type: 'error', message: `Failed to update ${field}` });
+        setNotification({
+          type: "error",
+          message: `Failed to update ${field}`,
+        });
       }
     } catch (error) {
-      setNotification({ type: 'error', message: 'An error occurred' });
+      setNotification({ type: "error", message: "An error occurred" });
     }
 
     setTimeout(() => setNotification(null), 5000);
@@ -707,13 +881,17 @@ export default function AffiliateDashboard() {
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
+            transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
             className="w-20 h-20 bg-gradient-to-br from-red-100 to-rose-100 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg"
           >
             <span className="text-4xl">🔒</span>
           </motion.div>
-          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 mb-3">Access Denied</h1>
-          <p className="text-gray-500">Affiliate account required to access this page</p>
+          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 mb-3">
+            Access Denied
+          </h1>
+          <p className="text-gray-500">
+            Affiliate account required to access this page
+          </p>
           <motion.a
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -737,18 +915,24 @@ export default function AffiliateDashboard() {
             animate={{ opacity: 1, y: 0, x: 0 }}
             exit={{ opacity: 0, y: -20 }}
             className={`fixed top-4 right-4 z-50 p-4 rounded-xl shadow-2xl border backdrop-blur-sm ${
-              notification.type === 'success' 
-                ? 'bg-emerald-50/90 border-emerald-200 text-emerald-800' 
-                : 'bg-red-50/90 border-red-200 text-red-800'
+              notification.type === "success"
+                ? "bg-emerald-50/90 border-emerald-200 text-emerald-800"
+                : "bg-red-50/90 border-red-200 text-red-800"
             }`}
           >
             <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                notification.type === 'success' ? 'bg-emerald-100' : 'bg-red-100'
-              }`}>
-                <span>{notification.type === 'success' ? '✓' : '⚠'}</span>
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  notification.type === "success"
+                    ? "bg-emerald-100"
+                    : "bg-red-100"
+                }`}
+              >
+                <span>{notification.type === "success" ? "✓" : "⚠"}</span>
               </div>
-              <span className="text-sm font-medium">{notification.message}</span>
+              <span className="text-sm font-medium">
+                {notification.message}
+              </span>
             </div>
           </motion.div>
         )}
@@ -758,7 +942,7 @@ export default function AffiliateDashboard() {
       <motion.div
         initial={{ x: -280 }}
         animate={{ x: 0 }}
-        transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+        transition={{ type: "spring", stiffness: 100, damping: 20 }}
         className="fixed left-0 top-0 h-full w-72 bg-white/90 backdrop-blur-2xl border-r border-gray-200/50 flex flex-col shadow-2xl shadow-gray-200/30 z-50"
       >
         {/* Logo Section */}
@@ -769,12 +953,23 @@ export default function AffiliateDashboard() {
             transition={{ delay: 0.2 }}
             className="flex items-center gap-3"
           >
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 flex items-center justify-center shadow-xl shadow-emerald-500/40 animate-gradient">
-              <span className="text-white text-xl">💎</span>
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 via-white to-cyan-500 flex items-center justify-center shadow-xl shadow-emerald-500/40 animate-gradient">
+              <span className="text-white text-xl">
+                <Image
+                  src="/refertle-logo.png"
+                  alt="Refertle Logo"
+                  width={120}
+                  height={120}
+                />
+              </span>
             </div>
             <div>
-              <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600">Refferq</h1>
-              <p className="text-xs text-gray-500 font-medium">Affiliate Portal</p>
+              <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600">
+                Refertle
+              </h1>
+              <p className="text-xs text-gray-500 font-medium">
+                Affiliate Portal
+              </p>
             </div>
           </motion.div>
         </div>
@@ -788,8 +983,12 @@ export default function AffiliateDashboard() {
         >
           <div className="flex items-center justify-between text-white">
             <div>
-              <p className="text-xs text-white/70 font-medium">Total Earnings</p>
-              <p className="text-2xl font-bold">₹{stats ? (stats.totalEarnings / 100).toFixed(0) : '0'}</p>
+              <p className="text-xs text-white/70 font-medium">
+                Total Earnings
+              </p>
+              <p className="text-2xl font-bold">
+                ₹{stats ? (stats.totalEarnings / 100).toFixed(0) : "0"}
+              </p>
             </div>
             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
               <span className="text-2xl">💰</span>
@@ -799,14 +998,17 @@ export default function AffiliateDashboard() {
 
         {/* Navigation */}
         <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-3">Main Menu</p>
-          
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-3">
+            Main Menu
+          </p>
+
           {[
-            { id: 'dashboard', label: 'Dashboard', icon: '🏠' },
-            { id: 'referrals', label: 'Referrals', icon: '👥' },
-            { id: 'resources', label: 'Resources', icon: '📚' },
-            { id: 'payouts', label: 'Payouts', icon: '💳' },
-            { id: 'reports', label: 'Reports', icon: '📊', badge: 'BETA' },
+            { id: "dashboard", label: "Dashboard", icon: "🏠" },
+            { id: "campaigns", label: "Campaigns", icon: "📢" },
+            { id: "referrals", label: "Referrals", icon: "👥" },
+            { id: "resources", label: "Resources", icon: "📚" },
+            { id: "payouts", label: "Payouts", icon: "💳" },
+            { id: "reports", label: "Reports", icon: "📊", badge: "BETA" },
           ].map((item, index) => (
             <motion.button
               key={item.id}
@@ -817,19 +1019,21 @@ export default function AffiliateDashboard() {
               whileTap={{ scale: 0.98 }}
               onClick={() => setActivePage(item.id)}
               className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all duration-200 ${
-                activePage === item.id 
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30' 
-                  : 'text-gray-600 hover:bg-gray-100/80 hover:text-gray-900'
+                activePage === item.id
+                  ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30"
+                  : "text-gray-600 hover:bg-gray-100/80 hover:text-gray-900"
               }`}
             >
               <span className="text-xl">{item.icon}</span>
               <span className="flex-1 text-left">{item.label}</span>
               {item.badge && (
-                <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-                  activePage === item.id 
-                    ? 'bg-white/20 text-white' 
-                    : 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white'
-                }`}>
+                <span
+                  className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
+                    activePage === item.id
+                      ? "bg-white/20 text-white"
+                      : "bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
+                  }`}
+                >
                   {item.badge}
                 </span>
               )}
@@ -841,22 +1045,24 @@ export default function AffiliateDashboard() {
               )}
             </motion.button>
           ))}
-          
+
           <div className="my-6 border-t border-gray-200/50"></div>
-          
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-3">Account</p>
-          
+
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-3">
+            Account
+          </p>
+
           <motion.button
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.6 }}
             whileHover={{ x: 4 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => setActivePage('settings')}
+            onClick={() => setActivePage("settings")}
             className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all duration-200 ${
-              activePage === 'settings' 
-                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30' 
-                : 'text-gray-600 hover:bg-gray-100/80 hover:text-gray-900'
+              activePage === "settings"
+                ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30"
+                : "text-gray-600 hover:bg-gray-100/80 hover:text-gray-900"
             }`}
           >
             <span className="text-xl">⚙️</span>
@@ -876,7 +1082,9 @@ export default function AffiliateDashboard() {
               {user.name?.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-semibold text-gray-900 truncate">{user.name}</div>
+              <div className="text-sm font-semibold text-gray-900 truncate">
+                {user.name}
+              </div>
               <div className="text-xs text-gray-500 truncate">{user.email}</div>
             </div>
             <motion.button
@@ -886,8 +1094,18 @@ export default function AffiliateDashboard() {
               className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100"
               title="Sign Out"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
               </svg>
             </motion.button>
           </div>
@@ -904,8 +1122,8 @@ export default function AffiliateDashboard() {
         >
           <div>
             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-gray-700 to-gray-600">
-              Welcome back, {user.name?.split(' ')[0]}! 
-              <motion.span 
+              Welcome back, {user.name?.split(" ")[0]}!
+              <motion.span
                 animate={{ rotate: [0, 15, -15, 0] }}
                 transition={{ repeat: Infinity, duration: 2, repeatDelay: 3 }}
                 className="inline-block ml-2"
@@ -913,7 +1131,9 @@ export default function AffiliateDashboard() {
                 👋
               </motion.span>
             </h1>
-            <p className="text-gray-500 mt-1">Track your referrals and earnings</p>
+            <p className="text-gray-500 mt-1">
+              Track your referrals and earnings
+            </p>
           </div>
           <div className="flex items-center gap-3">
             <motion.button
@@ -921,8 +1141,18 @@ export default function AffiliateDashboard() {
               whileTap={{ scale: 0.95 }}
               className="relative p-3 text-gray-500 hover:text-emerald-600 bg-white hover:bg-emerald-50 rounded-xl transition-all shadow-sm border border-gray-100"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                />
               </svg>
             </motion.button>
           </div>
@@ -942,15 +1172,19 @@ export default function AffiliateDashboard() {
               <span className="text-3xl">💰</span>
             </div>
             <div>
-              <p className="text-white/80 text-sm font-medium">Earn 20% commission on all paid customers</p>
-              <p className="text-xl font-bold mt-1">Start referring today and grow your earnings!</p>
+              <p className="text-white/80 text-sm font-medium">
+                Earn 20% commission on all paid customers
+              </p>
+              <p className="text-xl font-bold mt-1">
+                Start referring today and grow your earnings!
+              </p>
             </div>
           </div>
         </motion.div>
 
         <AnimatePresence mode="wait">
           {/* Dashboard Page */}
-          {activePage === 'dashboard' && (
+          {activePage === "dashboard" && (
             <motion.div
               key="dashboard"
               initial={{ opacity: 0, y: 20 }}
@@ -962,8 +1196,27 @@ export default function AffiliateDashboard() {
             </motion.div>
           )}
 
+          {activePage === "campaigns" && (
+            <motion.div
+              key="campaigns"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className=""
+            >
+              <div className="max-w-6xl mx-auto">
+                <CampaignsTab
+                  onSuccess={function (data: FormData): void {
+                    throw new Error("Function not implemented.");
+                  }}
+                />
+              </div>
+            </motion.div>
+          )}
+
           {/* Referrals Page */}
-          {activePage === 'referrals' && (
+          {activePage === "referrals" && (
             <motion.div
               key="referrals"
               initial={{ opacity: 0, y: 20 }}
@@ -971,15 +1224,15 @@ export default function AffiliateDashboard() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <ReferralsPage 
-                referrals={referrals} 
-                onSubmitLead={() => setShowSubmitModal(true)} 
+              <ReferralsPage
+                referrals={referrals}
+                onSubmitLead={() => setShowSubmitModal(true)}
               />
             </motion.div>
           )}
 
           {/* Payouts Page */}
-          {activePage === 'payouts' && (
+          {activePage === "payouts" && (
             <motion.div
               key="payouts"
               initial={{ opacity: 0, y: 20 }}
@@ -992,7 +1245,7 @@ export default function AffiliateDashboard() {
           )}
 
           {/* Settings Page */}
-          {activePage === 'settings' && (
+          {activePage === "settings" && (
             <motion.div
               key="settings"
               initial={{ opacity: 0, y: 20 }}
@@ -1000,8 +1253,8 @@ export default function AffiliateDashboard() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <SettingsPage 
-                settingsForm={settingsForm} 
+              <SettingsPage
+                settingsForm={settingsForm}
                 setSettingsForm={setSettingsForm}
                 onUpdate={handleUpdateSettings}
               />
@@ -1009,7 +1262,7 @@ export default function AffiliateDashboard() {
           )}
 
           {/* Other Pages */}
-          {(activePage === 'resources' || activePage === 'reports') && (
+          {(activePage === "resources" || activePage === "reports") && (
             <motion.div
               key={activePage}
               initial={{ opacity: 0, y: 20 }}
@@ -1021,7 +1274,10 @@ export default function AffiliateDashboard() {
                 <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 mb-4">
                   {activePage.charAt(0).toUpperCase() + activePage.slice(1)}
                 </h2>
-                <p className="text-gray-600">This section is under development. Check back soon for updates!</p>
+                <p className="text-gray-600">
+                  This section is under development. Check back soon for
+                  updates!
+                </p>
               </div>
             </motion.div>
           )}
@@ -1043,73 +1299,91 @@ export default function AffiliateDashboard() {
               exit={{ scale: 0.9, opacity: 0 }}
               className="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl"
             >
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold text-gray-900">Submit lead</h3>
-              <button
-                onClick={() => setShowSubmitModal(false)}
-                className="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-all"
-              >
-                <span className="text-xl">&times;</span>
-              </button>
-            </div>
-
-            <p className="text-sm text-gray-500 mb-8">
-              Enter the details below to submit a lead. Ensure all information is accurate for proper tracking and follow-up.
-            </p>
-
-            <form onSubmit={handleSubmitLead} className="space-y-5">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  What's the lead's name?*
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={submitForm.leadName}
-                  onChange={(e) => setSubmitForm({ ...submitForm, leadName: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
-                  placeholder="Full name"
-                />
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-900">
+                  Submit lead
+                </h3>
+                <button
+                  onClick={() => setShowSubmitModal(false)}
+                  className="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-all"
+                >
+                  <span className="text-xl">&times;</span>
+                </button>
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  What is the main contact's email address?*
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={submitForm.leadEmail}
-                  onChange={(e) => setSubmitForm({ ...submitForm, leadEmail: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
-                  placeholder="email@example.com"
-                />
-              </div>
+              <p className="text-sm text-gray-500 mb-8">
+                Enter the details below to submit a lead. Ensure all information
+                is accurate for proper tracking and follow-up.
+              </p>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  What is the estimated deal size for this lead? (Type 0 if unsure)*
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-3.5 text-gray-400 font-medium">₹</span>
+              <form onSubmit={handleSubmitLead} className="space-y-5">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    What's the lead's name?*
+                  </label>
                   <input
-                    type="number"
+                    type="text"
                     required
-                    value={submitForm.estimatedValue}
-                    onChange={(e) => setSubmitForm({ ...submitForm, estimatedValue: e.target.value })}
-                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
-                    placeholder="0"
+                    value={submitForm.leadName}
+                    onChange={(e) =>
+                      setSubmitForm({ ...submitForm, leadName: e.target.value })
+                    }
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                    placeholder="Full name"
                   />
                 </div>
-              </div>
 
-              <button
-                type="submit"
-                className="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl hover:shadow-lg hover:shadow-emerald-500/30 font-semibold transition-all duration-300"
-              >
-                Submit lead
-              </button>
-            </form>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    What is the main contact's email address?*
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={submitForm.leadEmail}
+                    onChange={(e) =>
+                      setSubmitForm({
+                        ...submitForm,
+                        leadEmail: e.target.value,
+                      })
+                    }
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                    placeholder="email@example.com"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    What is the estimated deal size for this lead? (Type 0 if
+                    unsure)*
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-3.5 text-gray-400 font-medium">
+                      ₹
+                    </span>
+                    <input
+                      type="number"
+                      required
+                      value={submitForm.estimatedValue}
+                      onChange={(e) =>
+                        setSubmitForm({
+                          ...submitForm,
+                          estimatedValue: e.target.value,
+                        })
+                      }
+                      className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl hover:shadow-lg hover:shadow-emerald-500/30 font-semibold transition-all duration-300"
+                >
+                  Submit lead
+                </button>
+              </form>
             </motion.div>
           </motion.div>
         )}
