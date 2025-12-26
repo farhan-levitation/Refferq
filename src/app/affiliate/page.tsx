@@ -13,6 +13,8 @@ interface AffiliateStats {
   totalClicks: number;
   totalLeads: number;
   totalReferredCustomers: number;
+  totalCampaigns: number;
+  activeCampaigns: number;
   referralLink: string;
   referralCode: string;
 }
@@ -59,7 +61,7 @@ function DashboardPage({
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 group">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm text-gray-500 font-medium">
-              Total Earnings
+              Revenue from referrals{" "}
             </span>
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform">
               <span className="text-white">💰</span>
@@ -68,13 +70,13 @@ function DashboardPage({
           <p className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
             ₹{((stats?.totalEarnings || 0) / 100).toFixed(2)}
           </p>
-          <p className="text-xs text-gray-400 mt-2">Lifetime earnings</p>
+          <p className="text-xs text-gray-400 mt-2">Lifetime revenue</p>
         </div>
 
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 group">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm text-gray-500 font-medium">
-              Total Clicks
+              Successful referrals{" "}
             </span>
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">
               <span className="text-white">👆</span>
@@ -83,35 +85,37 @@ function DashboardPage({
           <p className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
             {stats?.totalClicks || 0}
           </p>
-          <p className="text-xs text-gray-400 mt-2">Link clicks</p>
+          <p className="text-xs text-gray-400 mt-2">referals</p>
         </div>
 
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 group">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm text-gray-500 font-medium">
-              Total Leads
+              Total Campaigns
             </span>
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:scale-110 transition-transform">
               <span className="text-white">📊</span>
             </div>
           </div>
           <p className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
-            {stats?.totalLeads || 0}
+            {stats?.totalCampaigns || 0}
           </p>
-          <p className="text-xs text-gray-400 mt-2">Submitted leads</p>
+          <p className="text-xs text-gray-400 mt-2">campaigns</p>
         </div>
 
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 group">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-gray-500 font-medium">Customers</span>
+            <span className="text-sm text-gray-500 font-medium">
+              Active Campaigns
+            </span>
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover:scale-110 transition-transform">
               <span className="text-white">✅</span>
             </div>
           </div>
           <p className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
-            {stats?.totalReferredCustomers || 0}
+            {stats?.activeCampaigns || 0}
           </p>
-          <p className="text-xs text-gray-400 mt-2">Converted customers</p>
+          <p className="text-xs text-gray-400 mt-2">campaigns</p>
         </div>
       </div>
 
@@ -742,6 +746,15 @@ export default function AffiliateDashboard() {
       const response = await fetch("/api/affiliate/profile");
       const data = await response.json();
 
+      const localCampaigns = JSON.parse(
+        localStorage.getItem("refferq_campaigns") || "[]"
+      );
+      const totalCampaigns = localCampaigns.length;
+      const activeCampaigns = localCampaigns.filter(
+        (campaign: any) =>
+          campaign.status === "ACTIVE" || campaign.status === "active"
+      ).length;
+
       if (data.success) {
         setStats({
           totalEarnings: data.affiliate?.balanceCents || 0,
@@ -750,6 +763,8 @@ export default function AffiliateDashboard() {
           totalReferredCustomers:
             data.referrals?.filter((r: any) => r.status === "APPROVED")
               .length || 0,
+          totalCampaigns: totalCampaigns, // Add this line
+          activeCampaigns: activeCampaigns,
           referralLink: `${window.location.origin}/r/${data.affiliate?.referralCode}`,
           referralCode: data.affiliate?.referralCode || "",
         });
